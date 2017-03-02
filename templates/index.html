@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block content-container %}
+
+<div class="test" style="margin-top: 35px">
+
+    <div class="row"> <!--首页概览-->
+        <div class="col-sm-6 col-lg-3">
+
+            <!--Registered User-->
+            <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+            <div class="panel media pad-all">
+                <div class="media-left">
+                    <span class="icon-wrap icon-wrap-sm icon-circle bg-success">
+                    <i class="fa fa-server fa-2x"></i>
+                    </span>
+                </div>
+
+                <div class="media-body">
+                    <p id="total_servers" class="text-2x mar-no text-thin"></p>
+                    <p class="text-muted mar-no">已管理服务器</p>
+                </div>
+            </div>
+            <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <!--New Order-->
+            <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+            <div class="panel media pad-all">
+                <div class="media-left">
+                    <span class="icon-wrap icon-wrap-sm icon-circle bg-info">
+                    <i class="fa fa-user fa-2x"></i>
+                    </span>
+                </div>
+
+                <div class="media-body">
+                    <p id="total_users" class="text-2x mar-no text-thin">0</p>
+                    <p class="text-muted mar-no">注册用户数</p>
+                </div>
+            </div>
+            <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        </div>
+        <div class="col-sm-6 col-lg-3">
+
+            <!--Comments-->
+            <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+            <div class="panel media pad-all">
+                <div class="media-left">
+                    <span class="icon-wrap icon-wrap-sm icon-circle bg-warning">
+                    <i class="fa fa-comment fa-2x"></i>
+                    </span>
+                </div>
+
+                <div  class="media-body">
+                    <p id="current_logging_users" style="cursor: pointer" onclick="ShowOnlineUsers()" class="text-2x btn-link  mar-no text-thin"></p>
+                    <p class="text-muted mar-no">当前在线用户</p>
+                </div>
+            </div>
+            <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+
+            <!--Sales-->
+            <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+            <div class="panel media pad-all">
+                <div class="media-left">
+                    <span class="icon-wrap icon-wrap-sm icon-circle bg-danger">
+                    <i class="fa fa-desktop fa-2x"></i>
+                    </span>
+                </div>
+
+                <div class="media-body">
+                    <p id="current_connected_hosts" style="cursor: pointer" onclick="ShowOnlineHosts()"  class="text-2x mar-no btn-link text-thin"></p>
+                    <p class="text-muted mar-no">正在连接的主机数</p>
+                </div>
+            </div>
+            <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+        </div>
+    </div> <!--end首页概览-->
+
+    <div class="row">
+        <div class="col-lg-8">
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <!--div class="panel-control">
+                        <button id="demo-panel-network-refresh" data-toggle="panel-overlay" data-target="#demo-panel-network" class="btn"><i class="fa fa-rotate-right"></i></button>
+                        <div class="btn-group">
+                            <button class="dropdown-toggle btn" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-gear"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                            </ul>
+                        </div>
+                    </div-->
+                    <h3 class="panel-title">用户登录量统计</h3>
+                </div>
+            <div id="chart-container" style="height: 300px; min-width: 310px;">
+
+
+            </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+
+            <div class="panel">
+                <div class="panel-heading">
+
+                    <h3 class="panel-title">最近活跃用户统计</h3>
+                </div>
+
+                <div  class="panel-body" style="height: 300px">
+
+                    <table class="table  table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>用户</th>
+                                    <th>登录次数</th>
+                                    <th>操作命令数</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent_active_users">
+
+                            </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+         <div class="col-lg-12">
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3 class="panel-title">最近10条批量任务纪录</h3>
+                </div>
+                <div class="table-responsive">
+                <table class="table table-striped">
+{#                    {% load custom_tag %}#}
+                    <thead>
+                        <tr>
+                            <th class="text-center">任务ID</th>
+                            <th class="text-center">日期</th>
+                            <th>操作用户</th>
+                            <th>操作主机数</th>
+                            <th>操作类型</th>
+                            <th>操作内容</th>
+                            <th>成功数</th>
+                            <th>失败数</th>
+                            <th>未知数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for task in recent_tasks %}
+                    <tr>
+                        <td><a class="btn-link" href="/configure/web_tasklogdetail/?child_of_task={{ task.id }}" target="_blank">#{{ task.id }}</a></td>
+                        <td>{{ task.start_time }}</td>
+                        <td>{{ task.user }}</td>
+                         <td>{{ task.hosts.select_related.count }}</td>
+                        <td>{{ task.get_task_type_display }}</td>
+
+{#                            <td>{{ task.cmd }}</td>#}
+{#                            <td>{% query_set task.tasklogdetail_set "result" "success" %}</td>#}
+{#                            <td>{% query_set task.tasklogdetail_set "result" "failed" %}</td>#}
+{#                            <td>{% query_set task.tasklogdetail_set "result" "unknown" %}</td>#}
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            </div>
+        </div>
+        <!--div class="col-lg-6">
+
+            <div class="panel">
+                <div class="panel-heading">
+
+                    <h3 class="panel-title">近期危险操作统计</h3>
+                </div>
+
+            </div>
+        </div-->
+    </div>
+
+</div>
+
+{% endblock %}
